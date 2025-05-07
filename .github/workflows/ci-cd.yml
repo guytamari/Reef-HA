@@ -36,8 +36,10 @@ jobs:
       - name: Terraform Init & Apply
         run: |
           cd terraform
-          terraform init
-          terraform destroy -auto-approve
+          terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+                          -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
+                          -backend-config="region=${{ env.AWS_REGION }}"
+          terraform apply -auto-approve
 
       - name: Set Terraform Outputs to GitHub ENV
         run: |
