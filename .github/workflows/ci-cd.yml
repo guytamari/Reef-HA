@@ -52,7 +52,7 @@ jobs:
 
       - name: Build, Tag, and Push Docker image to ECR
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REPOSITORY_URL:$IMAGE_TAG .
           docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
