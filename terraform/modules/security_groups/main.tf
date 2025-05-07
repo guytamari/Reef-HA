@@ -1,13 +1,17 @@
-
-# security group for alb
-
-resource "aws_security_group" "alb_sg" {
+# ALB Security Group
+resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
   description = "allow https for alb"
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "https from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -26,9 +30,8 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-# sg for the ecs
-
-resource "aws_security_group" "ecs_sg" {
+# ECS Security Group
+resource "aws_security_group" "ecs" {
   name        = "${var.project_name}-ecs-sg"
   description = "allow traffic from alb"
   vpc_id      = var.vpc_id
@@ -38,7 +41,7 @@ resource "aws_security_group" "ecs_sg" {
     from_port       = var.container_port
     to_port         = var.container_port
     protocol        = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
+    security_groups = [aws_security_group.alb.id]
   }
 
   egress {

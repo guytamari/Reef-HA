@@ -14,12 +14,17 @@ module "security_group" {
   vpc_id               = module.vpc.vpc_id
 }
 
+module "iam" {
+  source               = "./modules/iam"
+  project_name         = var.project_name
+}
+
 module "route53" {
   source = "./modules/route53"
   domain_name    = var.domain_name
   project_name   = var.project_name
-  alb_dns_name   = module.alb.dns_name
-  alb_zone_id    = module.alb.zone_id
+  alb_dns_name   = module.alb.alb_dns_name
+  alb_zone_id    = module.alb.alb_zone_id
 }
 
 module "acm" {
@@ -43,5 +48,18 @@ module "alb" {
 module "ecr" {
   source               = "./modules/ecr"
   project_name         = var.project_name
+}
+
+module "ecs" {
+  source               = "./modules/ecs"
+  project_name         = var.project_name
+  container_port       = var.container_port
+  private_subnet_ids   = module.vpc.private_subnet_ids
+  ecs_sg_id            = module.security_group.ecs_sg_id
+  ecr_repository_url   = module.ecr.repository_url
+  alb_target_group_arn = module.alb.target_group_arn
+  alb_listener_arn     = module.alb.listener_arn
+  ecs_execution_role_arn = module.iam.ecs_execution_role_arn
+  ecs_task_role_arn     = module.iam.ecs_task_role_arn
 }
 

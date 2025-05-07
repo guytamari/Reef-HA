@@ -1,15 +1,20 @@
-output "dns_name" {
-  description = "The DNS name of the load balancer"
+output "alb_dns_name" {
+  description = "DNS name of the ALB"
   value       = aws_lb.this.dns_name
 }
 
-output "zone_id" {
-  description = "the zone id of the alb"
+output "alb_zone_id" {
+  description = "Zone ID of the ALB"
   value       = aws_lb.this.zone_id
 }
 
+output "listener_arn" {
+  description = "ARN of the ALB listener"
+  value       = aws_lb_listener.https.arn
+}
+
 output "target_group_arn" {
-  description = "the arn of the tg"
+  description = "ARN of the ALB target group"
   value       = aws_lb_target_group.this.arn
 }
 
