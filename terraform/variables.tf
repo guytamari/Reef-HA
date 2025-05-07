@@ -50,5 +50,5 @@ variable "container_port" {
 variable "project_name" {
   description = "default project name"
   type        = string
-  default     = "Reef-ha-hello"
+  default     = "reef-ha-hello"
 }

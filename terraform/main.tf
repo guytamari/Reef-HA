@@ -22,12 +22,12 @@ module "route53" {
   alb_zone_id    = module.alb.zone_id
 }
 
-# module "acm" {
-#   source = "./modules/acm"
-#   domain_name   = var.domain_name
-#   project_name  = var.project_name
-#   zone_id       = module.route53.zone_id
-# }
+module "acm" {
+  source = "./modules/acm"
+  domain_name   = var.domain_name
+  project_name  = var.project_name
+  zone_id       = module.route53.zone_id
+}
 
 module "alb" {
   source               = "./modules/alb"
@@ -37,14 +37,11 @@ module "alb" {
   public_subnet_ids    = module.vpc.public_subnet_ids
   alb_sg_id            = module.security_group.alb_sg_id
   acm_certificate_arn  = module.acm.certificate_arn
+  certificate_validation_arn = module.acm.certificate_validation_arn
 }
 
-# route53 record:
-
-# _bcf3080ba4e656139c2ef1dac3287bc1.hello-world.org
-# _a1b131a6cc4a37c48f45a5520c8cf7f7.xlfgrmvvlj.acm-validations.aws.
-
-# acm:
-# _bcf3080ba4e656139c2ef1dac3287bc1.hello-world.org.
-# _a1b131a6cc4a37c48f45a5520c8cf7f7.xlfgrmvvlj.acm-validations.aws.
+module "ecr" {
+  source               = "./modules/ecr"
+  project_name         = var.project_name
+}
 

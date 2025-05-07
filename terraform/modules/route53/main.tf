@@ -1,16 +1,22 @@
-# create hosted zone in route53
+# # create hosted zone in route53
 
-resource "aws_route53_zone" "main" {
-  name = var.domain_name
+# resource "aws_route53_zone" "main" {
+#   name = var.domain_name
 
-  tags = {
-    Name    = "${var.project_name}-zone"
-  }
+#   tags = {
+#     Name    = "${var.project_name}-zone"
+#   }
+# }
+
+# get the id of the zone
+data "aws_route53_zone" "main" {
+  name         = var.domain_name
+  private_zone = false
 }
 
 # create a record for alb
 resource "aws_route53_record" "app" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = data.aws_route53_zone.main.zone_id
   name    = var.domain_name
   type    = "A"
 

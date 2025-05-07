@@ -21,3 +21,7 @@ variable "container_port" {
 variable "acm_certificate_arn" {
   type = string
 }
+
+variable "certificate_validation_arn" {
+  type = string
+}

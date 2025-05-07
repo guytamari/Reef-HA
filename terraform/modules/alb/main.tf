@@ -1,4 +1,3 @@
-
 # alb itself
 
 resource "aws_lb" "this" {
@@ -48,4 +47,6 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.this.arn
   }
+
+  depends_on = [var.certificate_validation_arn]
 }
