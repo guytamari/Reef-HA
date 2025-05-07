@@ -3,5 +3,6 @@ resource "aws_ecr_repository" "this" {
   tags = {
     Name = "${var.project_name}-ecr"
   }
+  force_delete = true
   
 }
