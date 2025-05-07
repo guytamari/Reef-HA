@@ -43,6 +43,7 @@ jobs:
 
       - name: Set Terraform Outputs to GitHub ENV
         run: |
+          cd terraform
           echo "ECR_REPOSITORY=$(terraform output -raw ecr_repository_name)" >> $GITHUB_ENV
           echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
           echo "ECS_CLUSTER=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
