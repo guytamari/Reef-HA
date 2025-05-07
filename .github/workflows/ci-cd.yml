@@ -40,30 +40,26 @@ jobs:
           terraform init  -backend-config="bucket=${{ secrets.TF_S3_BUCKET }}" \
                           -backend-config="key=${{ secrets.TF_S3_KEY }}" \
                           -backend-config="region=${{ secrets.AWS_REGION }}"
-          terraform apply -auto-approve
+          terraform destroy -auto-approve
 
-      - name: Set Terraform Outputs to GitHub ENV
-        run: |
-          cd terraform
-          echo "ECR_REPOSITORY=$(terraform output -raw ecr_repository_name)" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
-          echo "ECS_CLUSTER=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
-          echo "ECS_SERVICE=$(terraform output -raw ecs_service_name)" >> $GITHUB_ENV
+      # - name: Set Terraform Outputs to GitHub ENV
+      #   run: |
+      #     cd terraform
+      #     echo "ECR_REPOSITORY=$(terraform output -raw ecr_repository_name)" >> $GITHUB_ENV
+      #     echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+      #     echo "ECS_CLUSTER=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
+      #     echo "ECS_SERVICE=$(terraform output -raw ecs_service_name)" >> $GITHUB_ENV
 
-      - name: Build, Tag, and Push Docker image to ECR
-        env:
-          IMAGE_TAG: latest
-        run: |
-          docker build -t $ECR_REPOSITORY_URL:$IMAGE_TAG .
-          docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
+      # - name: Build, Tag, and Push Docker image to ECR
+      #   env:
+      #     IMAGE_TAG: latest
+      #   run: |
+      #     docker build -t $ECR_REPOSITORY_URL:$IMAGE_TAG .
+      #     docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
 
-      - name: Update ECS Service with new image
-        run: |
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment
-
-# check2
-# -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID}}" \
-# -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}" \
+      # - name: Update ECS Service with new image
+      #   run: |
+      #     aws ecs update-service \
+      #       --cluster $ECS_CLUSTER \
+      #       --service $ECS_SERVICE \
+      #       --force-new-deployment
