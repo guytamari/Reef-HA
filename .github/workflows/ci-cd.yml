@@ -36,7 +36,9 @@ jobs:
       - name: Terraform Init & Apply
         run: |
           cd terraform
-          terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+          terraform init  -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID}}" \
+                          -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY}}" \
+                          -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
                           -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
                           -backend-config="region=${{ env.AWS_REGION }}"
           terraform apply -auto-approve
