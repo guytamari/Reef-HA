@@ -57,5 +57,5 @@ resource "aws_iam_role_policy_attachment" "ecs_logs" {
 # Attach ECR policy to allow the task to pull images
 resource "aws_iam_role_policy_attachment" "ecs_ecr" {
   role       = aws_iam_role.ecs_task.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonECR-FullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 }

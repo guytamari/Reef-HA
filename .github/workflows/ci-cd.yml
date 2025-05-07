@@ -36,9 +36,9 @@ jobs:
       - name: Terraform Init & Apply
         run: |
           cd terraform
-          terraform init  -backend-config="bucket=terraform-state-reef" \
-                          -backend-config="key=terraform.tfstate" \
-                          -backend-config="region=us-east-1"
+          terraform init  -backend-config="bucket=${{ secrets.TF_S3_BUCKET }}" \
+                          -backend-config="key=${{ secrets.TF_S3_KEY }}" \
+                          -backend-config="region=${{ secrets.AWS_REGION }}"
           terraform apply -auto-approve
 
       - name: Set Terraform Outputs to GitHub ENV
