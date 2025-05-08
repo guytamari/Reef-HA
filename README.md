@@ -1,90 +1,109 @@
-# Hello World Web Application
+# DevOps Home Assignment: "Hello World" Web App on AWS
 
-This project demonstrates a complete CI/CD pipeline for deploying a "Hello World" web application using AWS, Terraform, and GitHub Actions.
+This project deploys a publicly accessible "Hello World" web app over HTTPS using Terraform, ECS, and GitHub Actions.
 
-## Architecture
+## Project Structure
 
-- **Application**: Simple Flask web application serving "Hello World"
-- **Infrastructure**: AWS ECS, ECR, ALB, ACM, and VPC
-- **CI/CD**: GitHub Actions for automated deployment
-- **Infrastructure as Code**: Terraform for AWS resource provisioning
+- **Dockerfile**: Builds a simple HTTP server that returns "Hello World."
+- **terraform/**: Contains Terraform code to provision AWS infrastructure.
+- **.github/workflows/ci-cd.yml**: Defines the CI/CD pipeline using GitHub Actions.
 
-## Prerequisites
+## Requirements
 
-1. AWS Account with appropriate permissions
-2. GitHub Account
-3. Domain name (for HTTPS)
+Before getting started, make sure you have the following:
 
-## Setup Instructions
+- **AWS Access Key ID** and **AWS Secret Access Key** with sufficient privileges (to be added as GitHub Secrets).
+- An **S3 Bucket** to store Terraform state files.
+- A registered domain name.
 
-### 1. AWS Credentials
+---
 
-1. Create an IAM user with the following permissions:
+## Step-by-Step Setup Guide
 
-   - AmazonECR-FullAccess
-   - AmazonECS-FullAccess
-   - AmazonVPCFullAccess
-   - AmazonRoute53FullAccess
-   - AmazonCertificateManagerFullAccess
-   - AmazonElasticLoadBalancingFullAccess
+### 1. Configure AWS Credentials
 
-2. Generate access keys for the IAM user
+You will need AWS credentials with sufficient permissions to manage ECS, ALB, ECR, etc. Once you have the credentials:
 
-### 2. GitHub Repository Setup
+- Go to your GitHub repository's **Settings > Secrets**.
+- Add the following secrets:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_REGION` (e.g., `us-east-1`)
+  - `TF_S3_BUCKET` (your S3 bucket name for Terraform state)
+  - `TF_S3_KEY` (your S3 key for Terraform state)
 
-1. Fork this repository
-2. Add the following secrets to your repository:
-   - `AWS_ACCESS_KEY_ID`: Your AWS access key
-   - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key
+### 2. Configure Terraform Variables
 
-### 3. Domain Setup
+Inside the `terraform/` folder, there are two example files:
 
-1. Register a domain name (if you don't have one)
-2. Create a hosted zone in Route 53
-3. Update the `domain_name` variable in `terraform/variables.tf`
+- `terraform.tfvars.example`: Contains variable values for your project.
+- `backend.tfvars.example`: Contains backend configuration for storing the Terraform state in S3.
 
-## Deployment
+To proceed:
 
-The application will automatically deploy when you push to the main branch. The pipeline will:
+1. Copy these example files to `terraform.tfvars` and `backend.tfvars`:
 
-1. Build and push the Docker image to ECR
-2. Initialize and apply Terraform configuration
-3. Deploy the application to ECS
+   ```bash
+   cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+   cp terraform/backend.tfvars.example terraform/backend.tfvars
+   ```
 
-## Accessing the Application
+2. Update the values in these files to match your environment:
+   - **terraform.tfvars**: Modify the values such as `aws_region`, `vpc_cidr`, `public_subnet_cidrs`, `domain_name`, etc., according to your desired configuration.
+   - **backend.tfvars**: Set your **S3 bucket name** and **S3 key** for Terraform state storage.
 
-Once deployed, you can access the application at:
+### 3. Set Up CI/CD Pipeline
 
+The CI/CD pipeline is defined in `.github/workflows/ci-cd.yml`. Here's what it does:
+
+- **Builds** and **pushes** the Docker image to AWS ECR.
+- **Initializes** and **applies** Terraform to provision infrastructure.
+- **Deploys** the new image to ECS.
+
+This pipeline is triggered on every push to the `main` branch.
+
+### 4. Run Terraform
+
+Once the variables are configured, initialize Terraform with the following command:
+
+```bash
+terraform init -backend-config="bucket=<your-s3-bucket-name>"                -backend-config="key=<your-s3-key>"                -backend-config="region=<your-region>"
 ```
-https://your-domain-name
+
+This will initialize Terraform with the S3 backend configuration. Then, apply the configuration to provision the infrastructure:
+
+```bash
+terraform apply -auto-approve
 ```
 
-## Infrastructure Details
+### 5. Trigger the CI/CD Pipeline
 
-- **VPC**: Custom VPC with public and private subnets
-- **ECS**: Fargate cluster with service
-- **ALB**: Application Load Balancer with HTTPS
-- **ACM**: SSL/TLS certificate
-- **ECR**: Container registry for the application
+Once you push your changes to the `main` branch, the pipeline will run automatically. This will:
+
+- Build and push your Docker image to ECR.
+- Provision the necessary AWS infrastructure with Terraform.
+- Deploy your application to ECS.
+
+### 6. Access the Web App
+
+After the pipeline completes successfully, your "Hello World" app will be publicly accessible over HTTPS via the Application Load Balancer (ALB). Use the domain you've configured in `terraform.tfvars` to access the app.
+
+---
 
 ## Cleanup
 
-To destroy the infrastructure:
+To destroy the infrastructure, run the following Terraform command:
 
-1. Navigate to the terraform directory
-2. Run `terraform destroy`
+```bash
+terraform destroy -auto-approve
+```
 
-## Security Considerations
+---
 
-- All sensitive data is stored in GitHub Secrets
-- HTTPS is enforced through ACM
-- Private subnets for ECS tasks
-- Security groups restrict access
+### Notes
 
-## Contributing
+- Make sure your AWS IAM role used for Terraform has sufficient permissions to create and manage all the resources (ECS, ALB, ECR, ACM, Route 53, etc.).
+- If you need to change any configurations, you can modify the `terraform.tfvars` file and re-run `terraform apply` to update the infrastructure.
+- Ensure your S3 bucket for Terraform state files exists before running the pipeline.
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+---
