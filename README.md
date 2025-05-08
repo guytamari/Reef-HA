@@ -62,21 +62,8 @@ The CI/CD pipeline is defined in `.github/workflows/ci-cd.yml`. Here's what it d
 
 This pipeline is triggered on every push to the `main` branch.
 
-### 4. Run Terraform
 
-Once the variables are configured, initialize Terraform with the following command:
-
-```bash
-terraform init -backend-config="bucket=<your-s3-bucket-name>"                -backend-config="key=<your-s3-key>"                -backend-config="region=<your-region>"
-```
-
-This will initialize Terraform with the S3 backend configuration. Then, apply the configuration to provision the infrastructure:
-
-```bash
-terraform apply -auto-approve
-```
-
-### 5. Trigger the CI/CD Pipeline
+### 4. Trigger the CI/CD Pipeline
 
 Once you push your changes to the `main` branch, the pipeline will run automatically. This will:
 
@@ -84,7 +71,7 @@ Once you push your changes to the `main` branch, the pipeline will run automatic
 - Provision the necessary AWS infrastructure with Terraform.
 - Deploy your application to ECS.
 
-### 6. Access the Web App
+### 5. Access the Web App
 
 After the pipeline completes successfully, your "Hello World" app will be publicly accessible over HTTPS via the Application Load Balancer (ALB). Use the domain you've configured in `terraform.tfvars` to access the app.
 
@@ -93,6 +80,12 @@ After the pipeline completes successfully, your "Hello World" app will be public
 ## Cleanup
 
 To destroy the infrastructure, run the following Terraform command:
+
+```bash
+terraform init -backend-config="bucket=<your-s3-bucket-name>"                -backend-config="key=<your-s3-key>"                -backend-config="region=<your-region>"
+```
+
+This will initialize Terraform with the S3 backend configuration. Then, apply the configuration to destroy the infrastructure:
 
 ```bash
 terraform destroy -auto-approve
