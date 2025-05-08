@@ -66,6 +66,9 @@ resource "aws_ecs_service" "this" {
   tags = {
     Name = "${var.project_name}-service"
   }
+  depends_on = [
+    var.alb_listener
+  ]
 }
 
 # CloudWatch Log Group

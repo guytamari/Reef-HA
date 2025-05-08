@@ -22,3 +22,7 @@ output "security_group_id" {
   description = "sg id of the alb"
   value       = var.alb_sg_id
 } 
+
+output "listener" {
+  value = aws_lb_listener.https
+}

@@ -61,5 +61,6 @@ module "ecs" {
   alb_listener_arn     = module.alb.listener_arn
   ecs_execution_role_arn = module.iam.ecs_execution_role_arn
   ecs_task_role_arn     = module.iam.ecs_task_role_arn
+  alb_listener       = module.alb.listener
 }
 
